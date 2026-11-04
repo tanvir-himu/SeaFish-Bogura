@@ -663,14 +663,6 @@ if (adminChecking) {
   );
 }
 
-// 4. Admin Access Check
-if (!isAdmin) {
-  return (
-    <main className="admin-login-page">
-      {/* এখানে আপনার আগের সম্পূর্ণ Admin Access JSX রাখুন */}
-    </main>
-  );
-}
 
   if (!session) {
     return (
