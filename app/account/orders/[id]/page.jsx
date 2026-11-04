@@ -14,6 +14,7 @@ export default function OrderDetailsPage() {
   const [error, setError] = useState("");
 
   
+
 useEffect(() => {
   let channel = null;
   let cancelled = false;
@@ -30,12 +31,43 @@ useEffect(() => {
     }
 
     const currentUser = authData.user;
+    const orderId = String(params.id);
+
+    // Subscribe to realtime updates
+    channel = supabase
+      .channel(`order-tracking-${orderId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "orders",
+          filter: `id=eq.${orderId}`,
+        },
+        (payload) => {
+          console.log("ORDER REALTIME UPDATE:", payload.new);
+
+          if (payload.new.user_id === currentUser.id) {
+            setOrder((previous) => ({
+              ...previous,
+              ...payload.new,
+            }));
+          }
+        }
+      )
+      .subscribe((status, err) => {
+        console.log("ORDER REALTIME STATUS:", status);
+
+        if (err) {
+          console.error("Realtime Subscription Error:", err);
+        }
+      });
 
     // Load initial order
     const { data, error: orderError } = await supabase
       .from("orders")
       .select("*")
-      .eq("id", params.id)
+      .eq("id", orderId)
       .eq("user_id", currentUser.id)
       .single();
 
@@ -53,31 +85,6 @@ useEffect(() => {
 
     setOrder(data);
     setLoading(false);
-
-    // Subscribe to real-time order updates
-    channel = supabase
-      .channel(`order-tracking-${params.id}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "orders",
-          filter: `id=eq.${params.id}`,
-        },
-        (payload) => {
-          const updatedOrder = payload.new;
-
-          // Only update the current customer's order
-          if (updatedOrder.user_id === currentUser.id) {
-            setOrder((previous) => ({
-              ...previous,
-              ...updatedOrder,
-            }));
-          }
-        }
-      )
-      .subscribe();
   }
 
   if (params.id) {
@@ -92,6 +99,7 @@ useEffect(() => {
     }
   };
 }, [params.id, router]);
+
 
 
   const money = (amount) =>
