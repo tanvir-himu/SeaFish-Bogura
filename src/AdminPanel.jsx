@@ -652,14 +652,7 @@ if (loading) {
   );
 }
 
-// 2. Login Check
-if (!session) {
-  return (
-    <main className="admin-login-page">
-      {/* এখানে আপনার আগের সম্পূর্ণ Login JSX রাখুন */}
-    </main>
-  );
-}
+
 
 // 3. Admin Permission Checking
 if (adminChecking) {
