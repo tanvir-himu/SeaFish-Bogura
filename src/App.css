@@ -2804,3 +2804,55 @@ img {
     font-size: 12px !important;
   }
 }
+.local-seo-section {
+  padding: 65px 20px;
+  background: #f1f8f6;
+}
+
+.local-seo-container {
+  max-width: 1050px;
+  margin: auto;
+  padding: 40px;
+  background: #ffffff;
+  border: 1px solid #dcece7;
+  border-radius: 20px;
+  box-shadow: 0 10px 35px rgba(12, 75, 65, 0.06);
+}
+
+.local-seo-container h2 {
+  color: #104e49;
+  font-size: 28px;
+  margin: 12px 0 18px;
+}
+
+.local-seo-container p {
+  color: #536b67;
+  line-height: 1.9;
+  margin-bottom: 12px;
+}
+
+.local-seo-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.local-seo-tags span {
+  padding: 9px 16px;
+  background: #e6f5f0;
+  color: #087568;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .local-seo-container {
+    padding: 24px 18px;
+  }
+
+  .local-seo-container h2 {
+    font-size: 23px;
+  }
+}

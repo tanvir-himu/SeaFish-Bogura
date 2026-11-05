@@ -900,7 +900,41 @@ const oldPrice =
   WhatsApp-এ যোগাযোগ করুন <ArrowRight size={18} />
 </button>
         </section>
-      </main>
+                <section className="local-seo-section">
+          <div className="local-seo-container">
+
+            <span className="section-kicker">
+              SEAFISH BOGURA
+            </span>
+
+            <h2>বগুড়া জেলায় সামুদ্রিক মাছের অনলাইন শপ</h2>
+
+            <p>
+              SeaFish Bogura brings online sea fish shopping
+              to customers across Bogura District, Bangladesh.
+              Explore our seafood collection, including Hilsa,
+              Bhetki, Churi (Ribbon Fish), and Loitta.
+            </p>
+
+            <p>
+              Browse available fish, check prices, and place
+              your order through our website or WhatsApp.
+              We aim to make seafood shopping convenient
+              for customers across Bogura District.
+            </p>
+
+            <div className="local-seo-tags">
+              <span>ইলিশ মাছ</span>
+              <span>ভেটকি মাছ</span>
+              <span>ছুরি মাছ</span>
+              <span>লইট্টা মাছ</span>
+              <span>Sea Fish Bogura</span>
+            </div>
+
+          </div>
+        </section>
+
+        </main>
 
       <footer className="footer">
         <a href="#home" className="brand footer-brand">

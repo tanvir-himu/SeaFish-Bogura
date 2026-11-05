@@ -1,75 +1,94 @@
+
 import ProductClient from "./ProductClient";
 import { supabase } from "../../../src/supabaseClient";
+import { notFound } from "next/navigation";
 
-export async function generateMetadata({ params }) {
-  const resolvedParams = await params;
-  const id = resolvedParams?.id;
+const SITE_URL = "https://seafishbogura.shop";
 
-  try {
-    const { data: product } = await supabase
-      .from("products")
-      .select("id, name, description, image_url, price")
-      .eq("id", id)
-      .single();
+async function getProduct(id) {
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
 
-    if (product) {
-      const title = `${product.name} | SeaFish Bogura`;
-      const description = `${product.name} কিনুন SeaFish Bogura থেকে। ${product.description || ""}`.trim();
-      const imageUrl =
-        product.image_url ||
-        "https://seafishbogura.netlify.app/images/seafish-cover.png";
-
-      return {
-        title,
-        description,
-        alternates: {
-          canonical: `/product/${id}`,
-        },
-        openGraph: {
-          title,
-          description,
-          url: `https://seafishbogura.netlify.app/product/${id}`,
-          images: [
-            {
-              url: imageUrl,
-              alt: product.name,
-            },
-          ],
-        },
-        twitter: {
-          card: "summary_large_image",
-          title,
-          description,
-          images: [imageUrl],
-        },
-      };
-    }
-  } catch (e) {
-    // fallback if fetch fails
+  if (error) {
+    console.error("Product Fetch Error:", error.message);
   }
 
+  return data || null;
+}
+
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  const product = await getProduct(id);
+
+  if (!product) {
+    return {
+      title: "Product Not Found | SeaFish Bogura",
+      description: "The requested fish product could not be found.",
+      robots: {
+        index: false,
+        follow: true,
+      },
+    };
+  }
+
+  const title = `${product.name} | SeaFish Bogura`;
+
+  const description =
+    `${product.name} কিনুন SeaFish Bogura থেকে। ${
+      product.description || "Bogura, Bangladesh-এ অনলাইনে মাছ অর্ডার করুন।"
+    }`.slice(0, 160);
+
+  const imageUrl =
+    product.image_url ||
+    `${SITE_URL}/images/seafish-cover.png`;
+
   return {
-    title: "Product Details | SeaFish Bogura",
-    description: "Buy fresh sea fish online from SeaFish Bogura.",
+    title,
+    description,
+
+    alternates: {
+      canonical: `/product/${id}`,
+    },
+
+    openGraph: {
+      type: "website",
+      title,
+      description,
+      url: `${SITE_URL}/product/${id}`,
+      images: [
+        {
+          url: imageUrl,
+          alt: product.name,
+        },
+      ],
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [imageUrl],
+    },
   };
 }
 
 export default async function ProductPage({ params }) {
-  const resolvedParams = await params;
-  const id = resolvedParams?.id;
+  const { id } = await params;
 
-  let initialProduct = null;
-  try {
-    const { data } = await supabase
-      .from("products")
-      .select("*")
-      .eq("id", id)
-      .single();
-    initialProduct = data;
-  } catch (e) {
-    // fallback to client load
+  const initialProduct = await getProduct(id);
+
+  // Product না পাওয়া গেলে Custom 404 দেখাবে
+  if (!initialProduct) {
+    notFound();
   }
 
-  return <ProductClient id={id} initialProduct={initialProduct} />;
+  return (
+    <ProductClient
+      id={id}
+      initialProduct={initialProduct}
+    />
+  );
 }
-
