@@ -165,17 +165,21 @@ useEffect(() => {
   setCartOpen(true);
 }
 
+
 const openProduct = (product) => {
+  const productSlug = product.slug || product.id;
+
   window.history.pushState(
     {},
     "",
-    `/product/${encodeURIComponent(product.id)}`
+    `/product/${encodeURIComponent(productSlug)}`
   );
 
   setSelectedProduct(product);
   setCurrentPath(window.location.pathname);
   window.scrollTo(0, 0);
 };
+
 
 const goHome = () => {
   window.history.pushState({}, "", "/");
