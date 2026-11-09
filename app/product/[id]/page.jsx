@@ -1,16 +1,21 @@
 
 import ProductClient from "./ProductClient";
 import { supabase } from "../../../src/supabaseClient";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 const SITE_URL = "https://seafishbogura.shop";
 
-async function getProduct(id) {
-  const { data, error } = await supabase
-    .from("products")
-    .select("*")
-    .eq("id", id)
-    .maybeSingle();
+// ID অথবা Slug দিয়ে Product খুঁজবে
+async function getProduct(identifier) {
+  let query = supabase.from("products").select("*");
+
+  if (/^\d+$/.test(String(identifier))) {
+    query = query.eq("id", identifier);
+  } else {
+    query = query.eq("slug", identifier);
+  }
+
+  const { data, error } = await query.maybeSingle();
 
   if (error) {
     console.error("Product Fetch Error:", error.message);
@@ -19,6 +24,7 @@ async function getProduct(id) {
   return data || null;
 }
 
+// SEO Metadata
 export async function generateMetadata({ params }) {
   const { id } = await params;
   const product = await getProduct(id);
@@ -34,6 +40,9 @@ export async function generateMetadata({ params }) {
     };
   }
 
+  const slug = product.slug || String(product.id);
+  const productUrl = `${SITE_URL}/product/${slug}`;
+
   const title = `${product.name} | SeaFish Bogura`;
 
   const description =
@@ -42,22 +51,21 @@ export async function generateMetadata({ params }) {
     }`.slice(0, 160);
 
   const imageUrl =
-    product.image_url ||
-    `${SITE_URL}/images/seafish-cover.png`;
+    product.image_url || `${SITE_URL}/images/seafish-cover.png`;
 
   return {
     title,
     description,
 
     alternates: {
-      canonical: `/product/${id}`,
+      canonical: productUrl,
     },
 
     openGraph: {
       type: "website",
       title,
       description,
-      url: `${SITE_URL}/product/${id}`,
+      url: productUrl,
       images: [
         {
           url: imageUrl,
@@ -75,19 +83,24 @@ export async function generateMetadata({ params }) {
   };
 }
 
+// Product Page
 export default async function ProductPage({ params }) {
   const { id } = await params;
 
   const initialProduct = await getProduct(id);
 
-  // Product না পাওয়া গেলে Custom 404 দেখাবে
   if (!initialProduct) {
     notFound();
   }
 
+  // পুরোনো ID URL থেকে নতুন Slug URL-এ Redirect
+  if (/^\d+$/.test(String(id)) && initialProduct.slug) {
+    redirect(`/product/${initialProduct.slug}`);
+  }
+
   return (
     <ProductClient
-      id={id}
+      id={String(initialProduct.id)}
       initialProduct={initialProduct}
     />
   );
