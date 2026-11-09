@@ -883,10 +883,7 @@ const oldPrice =
             </div>
           )}
 
-          <p className="price-notice">
-            দ্রষ্টব্য: প্রদর্শিত মাছের ছবি ও দাম আপাতত নমুনা।
-            বিক্রি শুরুর আগে প্রকৃত পণ্য, ওজন ও মূল্য আপডেট করতে হবে।
-          </p>
+          
         </section>
 
         <section className="order-banner" id="contact">
