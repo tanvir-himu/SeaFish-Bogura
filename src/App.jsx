@@ -1,6 +1,6 @@
 
 "use client";
-
+import ProductReviews from "../app/product/[id]/ProductReviews";
 import SEO from "./SEO";
 import ProductDetails from "./components/ProductDetails";
 import ContactUs from "./components/ContactUs";
@@ -565,16 +565,26 @@ if (mounted && currentPath === "/privacy-policy") {
   );
 }
 
+
 if (currentPath.startsWith("/product/")) {
+  const activeProduct = routeProduct || selectedProduct;
+
   return (
-    <ProductDetails
-  product={routeProduct || selectedProduct}
-  loading={loadingProducts}
-  onAddToCart={addToCart}
-  onBack={goHome}
-/>
+    <>
+      <ProductDetails
+        product={activeProduct}
+        loading={loadingProducts}
+        onAddToCart={addToCart}
+        onBack={goHome}
+      />
+
+      {!loadingProducts && activeProduct && (
+        <ProductReviews productId={activeProduct.id} />
+      )}
+    </>
   );
 }
+
 
   return (
   <>
